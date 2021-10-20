@@ -1,5 +1,0 @@
- os.system("sudo apt-get install dselect")
- os.system("sudo dselect update")
- os.system("sudo dpkg --set-selections < apt_get_list.txt")
- os.system("sudo apt-get -y update")
- os.system("sudo apt-get dselect-upgrade")
