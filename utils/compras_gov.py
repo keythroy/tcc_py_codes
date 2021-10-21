@@ -30,60 +30,67 @@ def get_response(**kwargs):
     nome = kwargs.get('nome')
     
     res = requests.get(url, verify=True).json()
-    print("--- formato da resposta: " + str(type(res)) + "\n")
+    print("--- Status da resposta: " + str(type(res)) + "\n")
+    print("--- formato da resposta: " + res.status_code() + "\n")
 
     if(valida_json(res['_embedded'][nome])):
         count = res['count']
         print(f'----------------- total de {nome} econtrados: {count} \n')
-        return res    
-        # df = pd.DataFrame(res['_embedded'][nome])
-        # df.to_json(arquivo,orient='records',lines=True)
+        return res['_embedded'][nome]
+  
     else:
         print('!!! erro ao criar datframe') 
         exit()
     
-
 def cria_dataframe(**kwargs):
     
-    print(f'----------------- Criando dataframe \n')
-
     nome = kwargs.get('nome')
+    print(f'----------------- Criando dataframe: {nome} \n')
+
     url = url_compras_gov + kwargs.get('url')
     arquivo = f'{url_dados_fonte}{nome}.json'
     # print(arquivo)
     
 
-    if(os.path.exists(arquivo) and not kwargs.get('iterate') ):
+    if(os.path.exists(arquivo)): #and not kwargs.get('iterate') ):
         print(f'----------------- Lendo arquivo json existente: {arquivo}\n')
         df = pd.read_json(arquivo)
+        
+            
+    elif(kwargs.get('iterate')):
+        
+        arr = []
+        for i in kwargs.get('ids'): #[97400]:
+            
+            url_b = url + str(i)
+            
+            print(f'----------------- Requisição API\n')
+            print('---- ' + url_b + '\n')
+            res = get_response(
+                url = url_b,
+                nome = nome
+            )
+            print(type(res))
+            
+            for x in res:
+                arr.append(x)
+            
+        df = pd.DataFrame(arr)
+        
+        print(f'----------------- gerando arquivo: {arquivo}\n')
+        df.to_json(arquivo)
+        
+        return df
 
     else: 
         print(f'----------------- Requisição API\n')
         
-        print('----' + url + '\n')
+        print('---- ' + url + '\n')
         print(f'----------------- gerando arquivo: {arquivo}\n')
         df = pd.DataFrame(get_response(
             url = url,
             nome = nome
         ))
-    
-
-        
+        df.to_json(arquivo)
+                
     return df
-
-def iterate_json(**kwargs):
-    arr = []
-    
-    for i in kwargs.get('ids'):
-        
-        url = kwargs.get('url') + str(i)
-        nome = kwargs.get('nome')
-        
-        df = cria_dataframe(
-            url = url,
-            nome= nome,
-            iterate = True
-        )
-        arr = arr + df
-
-    return arr
