@@ -1,0 +1,10 @@
+version: '2.2'
+
+services:
+  eclipse-theia:
+    restart: always
+    image: theiaide/theia:next
+    init: true
+    environment:
+      - VIRTUAL_HOST=ide.tcc_keyth
+      - LETSENCRYPT_HOST=ide.tcc_keyth
