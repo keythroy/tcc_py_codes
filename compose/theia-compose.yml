@@ -5,6 +5,6 @@ services:
     restart: always
     image: theiaide/theia:next
     init: true
-    environment:
-      - VIRTUAL_HOST=ide.tcc_keyth
-      - LETSENCRYPT_HOST=ide.tcc_keyth
+    # environment:
+    #   - VIRTUAL_HOST=ide.tcc_keyth
+    #   - LETSENCRYPT_HOST=ide.tcc_keyth

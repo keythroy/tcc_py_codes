@@ -23,6 +23,5 @@ sudo apt-get install python3 python3-pip
 
 pip3 install docker-compose
 
-docker-compose -f compose/nginx-compose.yml up -d 
-
-docker-compose -f compose/theia-compose.yml up -d 
+docker-compose -f compose/theia-compose.yml up -d --remove-orphan
+docker-compose -f compose/nginx-compose.yml up -d --remove-orphan
