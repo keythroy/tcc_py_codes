@@ -18,3 +18,15 @@ sudo apt-get install -y docker-ce
 sudo groupadd docker
 sudo usermod -aG docker $USER
 sudo systemctl enable docker
+
+sudo apt-get install python3 python-pip
+
+curl -O https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-x86_64.sh && \
+bash Anaconda3-2019.03-Linux-x86_64.sh && \
+source ~/.bashrc && \
+rm Anaconda3-2019.03-Linux-x86_64.sh && \
+tset && \
+conda update conda && \
+conda install -c conda-forge docker-compose \
+conda env create --name tcc_env --file=environment.yml && \
+conda activate tcc_env
