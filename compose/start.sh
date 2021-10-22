@@ -19,10 +19,10 @@ sudo groupadd docker
 sudo usermod -aG docker $USER
 sudo systemctl enable docker
 
-sudo apt-get install python3 python-pip
+sudo apt-get install python3 python3-pip
 
 pip3 install docker-compose
 
-docker-compose -f nginx-compose.yaml up -d 
+docker-compose -f compose/nginx-compose.yml up -d 
 
-docker-compose -f theia-compose.yaml up -d 
+docker-compose -f compose/theia-compose.yml up -d 
