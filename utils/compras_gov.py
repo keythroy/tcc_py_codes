@@ -43,6 +43,7 @@ def get_response(**kwargs):
 def cria_dataframe_iterate(**kwargs):
     
     nome = kwargs.get('nome')
+    params = kwargs.get('params')
     url = url_compras_gov + kwargs.get('url')
            
     print(f'----------------- Criando dataframe: {nome} \n')
@@ -53,49 +54,50 @@ def cria_dataframe_iterate(**kwargs):
         
         count = 1
         offset = 1
+        arquivo = f'{url_dados_fonte}{nome}_{i}.json'
+        
+        if(os.path.exists(arquivo)): 
+            print(f'----------------- arquivo já existente: {arquivo}\n')
+            break
     
         while(count > 0):
-            
-            arquivo = f'{url_dados_fonte}{nome}_{i}.json'
-            
-            if(os.path.exists(arquivo)): 
-                print(f'----------------- arquivo já existente: {arquivo}\n')
-                break
-            
-            print(f'----------------- Requisição API\n')
-            url_b = url + str(i) + f"&offset={offset-1}"
-            
-            if(nome == 'licitacoes'):
-                url_b = url_b + '&data_publicacao_min=2015-01-01&data_publicacao_max=2021-01-01'
-     
+                
+            # print(f'----------------- Requisição API\n')
+            url_b = url + str(i) + + "&offset=" + (offset-1) + "params"
             print(url_b + '\n')
               
             res = requests.get(url_b, stream=True)
+            print("------ Status resposta: "+str(res.status_code) + "\n")
             
-            if(res.status_code != 200):
-                offset = offset + 1
+            i = 0
+            while(res.status_code == 500 and i < 20):
+                # offset = offset + 1
+                time.sleep(10)
+                res = requests.get(url_b, stream=True)
+                i = i+1
+            
+            if res.status_code != 200
+                print('------------ erro na requisicao')
                 break
             
             res = res.json()
-            
             count = res['count']
-            # print(type(res))
+            print('----------- Registros encontrados: ' + str(count) + '\n')
             
-            for x in res['_embedded'][nome]:
-                arr.append(x)
-                
-            # print("----------------- Registros armazenados: " + str(count)+"\n")
-            if(count < 500):
-                break
+            if(count != 0):
             
-            offset = offset+500                        
-
-        df = pd.DataFrame(arr)
-
-        print(f'----------------- gerando arquivo: {arquivo}\n')
-        df.to_json(arquivo)
-        
+                for x in res['_embedded'][nome]:
+                    arr.append(x)
+            
+                if(count < 500):
+                    count = 0
+            
+                df = pd.DataFrame(arr)
+                print(f'----------------- gerando arquivo\n')
+                df.to_json(arquivo)
                 
+                offset = offset+500                        
+            
     print(f'----------------- concatenando arquivos JSON\n')
     
     # concatena arquivos json no mesmo dataframe   
